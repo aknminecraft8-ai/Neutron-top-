@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Neutron Store | Pusat Top Up & Membership</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --p:#6366f1; --s:#a855f7; --a:#10b981; --bg:#f8fafc; --c:#ffffff; --t:#1e293b; --b:#cbd5e1; --r:#ef4444; }
+        [data-theme="dark"] { --bg:#0f172a; --c:#1e293b; --t:#f8fafc; --b:#475569; }
+        
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; transition:0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { background:var(--bg); color:var(--t); line-height:1.5; overflow-x:hidden; }
+        
+        .promo-banner { background:linear-gradient(90deg, var(--p), var(--s)); color:#fff; padding:12px; text-align:center; font-weight:800; font-size:0.75rem; letter-spacing:1px; text-transform:uppercase; }
+        nav { display:flex; justify-content:space-between; padding:15px 5%; background:var(--c); border-bottom:2px solid var(--b); position:sticky; top:0; z-index:100; align-items:center; }
+        .logo { font-weight:800; font-size:1.5rem; color:var(--p); text-decoration:none; }
+
+        .container { padding:20px 5%; }
+        .search-box { width:100%; padding:18px; border-radius:20px; border:2px solid var(--b); background:var(--c); color:var(--t); font-size:1rem; font-weight:700; margin-bottom:20px; outline:none; }
+
+        /* Section Title */
+        .sec-title { font-weight:800; font-size:1.1rem; margin-bottom:15px; display:flex; align-items:center; gap:10px; }
+        .sec-title i { color:var(--p); }
+
+        /* Horizontal Slider untuk Pass */
+        .pass-slider { display:flex; gap:15px; overflow-x:auto; padding-bottom:15px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+        .pass-slider::-webkit-scrollbar { display:none; }
+        .pass-card { min-width:280px; background:linear-gradient(135deg, #1e293b, #334155); color:#fff; padding:20px; border-radius:25px; scroll-snap-align: start; cursor:pointer; position:relative; overflow:hidden; border:2px solid transparent; }
+        .pass-card:hover { border-color:var(--p); }
+        .pass-card h4 { font-size:1.1rem; font-weight:800; margin-bottom:5px; }
+        .pass-card p { font-size:0.8rem; opacity:0.8; margin-bottom:15px; }
+        .pass-price { font-size:1.2rem; font-weight:800; color:var(--a); }
+        .pass-tag { position:absolute; top:10px; right:10px; background:var(--r); font-size:0.6rem; padding:4px 8px; border-radius:10px; font-weight:800; }
+
+        /* Grid Game */
+        .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:15px; margin-top:10px; }
+        .g-card { background:var(--c); padding:20px 10px; border-radius:25px; text-align:center; cursor:pointer; border:2px solid var(--b); box-shadow:0 4px 6px -1px rgba(0,0,0,0.1); }
+        .g-card:hover { transform:translateY(-5px); border-color:var(--p); }
+
+        /* Modal */
+        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:200; backdrop-filter:blur(10px); justify-content:center; align-items:center; padding:15px; }
+        .m-content { background:var(--c); padding:25px; border-radius:35px; width:100%; max-width:600px; max-height:90vh; overflow-y:auto; border:2px solid var(--b); }
+
+        /* Input Fields */
+        .input-group { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px; }
+        .field-label { font-weight:800; font-size:0.75rem; color:var(--p); text-transform:uppercase; margin-bottom:5px; display:block; }
+
+        /* Item Selection */
+        .d-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:10px; margin:15px 0; }
+        .d-item { background:var(--bg); padding:12px; border-radius:18px; cursor:pointer; border:2px solid var(--b); }
+        .d-item b { font-size:0.9rem; display:block; color:var(--t); font-weight:800; }
+        .d-item span { color:var(--p); font-weight:800; font-size:0.85rem; }
+        .active { border-color:var(--p) !important; background:var(--c) !important; }
+
+        /* Payment List */
+        .pay-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap:10px; margin-top:10px; }
+        .pay-item { background:var(--bg); padding:10px; border-radius:15px; border:2px solid var(--b); cursor:pointer; text-align:center; font-size:0.75rem; font-weight:800; }
+
+        .btn { width:100%; padding:18px; border-radius:20px; border:none; background:var(--p); color:#fff; font-weight:800; cursor:pointer; font-size:1rem; margin-top:15px; }
+        
+        /* Success Anim */
+        #success-overlay { display:none; position:fixed; inset:0; background:var(--bg); z-index:1000; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+        .checkmark-svg { width: 100px; height: 100px; margin-bottom:20px; }
+        .checkmark-circle { stroke: var(--a); stroke-width: 2; fill: none; stroke-dasharray: 166; stroke-dashoffset: 166; animation: stroke 0.6s forwards; }
+        .checkmark-check { stroke: var(--a); stroke-width: 4; fill: none; stroke-dasharray: 48; stroke-dashoffset: 48; animation: stroke 0.3s 0.6s forwards; }
+        @keyframes stroke { 100% { stroke-dashoffset: 0; } }
+
+        .credits { background:var(--c); margin:20px 5% 50px; padding:30px; border-radius:35px; border:2px solid var(--b); text-align:center; }
+        .social-links { display:flex; justify-content:center; gap:15px; margin-top:20px; }
+        .social-links a { width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; text-decoration:none; }
+
+        #toast { position:fixed; bottom:20px; left:20px; background:var(--c); padding:15px 25px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.1); transform:translateX(-180%); z-index:300; font-size:0.8rem; border-left:5px solid var(--a); font-weight:800; }
+        #toast.show { transform:translateX(0); }
+    </style>
+</head>
+<body>
+
+<div class="promo-banner">⭐ DISKON 85% KODE: NEUTRON85 | ADMIN: 0838-2740-8115 ⭐</div>
+
+<nav>
+    <a href="#" class="logo">NEUTRON<span style="color:var(--a)">STORE</span></a>
+    <i class="fas fa-moon" id="darkBtn" style="cursor:pointer; font-size:1.2rem"></i>
+</nav>
+
+<div class="container">
+    <input type="text" id="find" class="search-box" placeholder="Cari Game..." onkeyup="search()">
+    
+    <!-- Bagian Pass Terpisah -->
+    <div class="sec-title"><i class="fas fa-crown"></i> Membership & Season Pass</div>
+    <div class="pass-slider" id="passList">
+        <!-- Dihasilkan oleh JS -->
+    </div>
+
+    <div class="sec-title" style="margin-top:30px"><i class="fas fa-gamepad"></i> Semua Game</div>
+    <div class="grid" id="glist">
+        <!-- Dihasilkan oleh JS -->
+    </div>
+</div>
+
+<!-- Modal Pembelian -->
+<div class="modal" id="modal">
+    <div class="m-content">
+        <h2 id="mTitle" style="margin-bottom:20px; font-weight:800">Top Up</h2>
+        
+        <div id="idSection">
+            <span class="field-label">Lengkapi Data Akun</span>
+            <div class="input-group">
+                <input type="text" id="uid" class="search-box" style="margin-bottom:0" placeholder="User ID">
+                <input type="text" id="sid" class="search-box" style="margin-bottom:0; display:none;" placeholder="Server ID">
+            </div>
+        </div>
+
+        <span class="field-label" id="packageLabel">Pilih Nominal</span>
+        <div id="itemGrid" class="d-grid"></div>
+
+        <span class="field-label">Metode Pembayaran</span>
+        <div class="pay-grid" id="payGrid">
+            <div class="pay-item" onclick="setPay(this,'QRIS')">QRIS</div>
+            <div class="pay-item" onclick="setPay(this,'DANA')">DANA</div>
+            <div class="pay-item" onclick="setPay(this,'OVO')">OVO</div>
+            <div class="pay-item" onclick="setPay(this,'GOPAY')">GoPay</div>
+            <div class="pay-item" onclick="setPay(this,'SHOPEEPAY')">ShopeePay</div>
+            <div class="pay-item" onclick="setPay(this,'LINKAJA')">LinkAja</div>
+            <div class="pay-item" onclick="setPay(this,'ALFAMART')">Alfamart</div>
+            <div class="pay-item" onclick="setPay(this,'INDOMARET')">Indomaret</div>
+            <div class="pay-item" onclick="setPay(this,'BCA')">Transfer BCA</div>
+            <div class="pay-item" onclick="setPay(this,'MANDIRI')">Mandiri</div>
+        </div>
+
+        <div style="background:var(--p); color:#fff; padding:18px; border-radius:20px; margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:700">Total Bayar:</span>
+            <span id="cTotal" style="font-weight:800; font-size:1.3rem">Rp 0</span>
+        </div>
+        
+        <button class="btn" style="background:var(--a)" onclick="order()">KONFIRMASI PEMBAYARAN</button>
+        <button class="btn" style="background:transparent; color:var(--t); font-size:0.8rem" onclick="closeM()">KEMBALI</button>
+    </div>
+</div>
+
+<!-- Success Screen -->
+<div id="success-overlay">
+    <svg class="checkmark-svg" viewBox="0 0 52 52">
+        <circle class="checkmark-circle" cx="26" cy="26" r="25"/>
+        <path class="checkmark-check" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+    </svg>
+    <h2 style="color:var(--a); font-weight:800">Pembayaran Berhasil!</h2>
+    <p style="margin:10px 0; opacity:0.7; font-weight:600">Pesanan akan masuk dalam 1-3 menit.</p>
+    <div id="res" style="background:var(--c); padding:20px; border-radius:20px; margin:20px; text-align:left; font-size:0.85rem; border:1px solid var(--b)"></div>
+    <button class="btn" style="width:200px; background:var(--t)" onclick="location.reload()">TUTUP</button>
+</div>
+
+<div class="credits">
+    <h3>Neutron Support</h3>
+    <p style="font-weight:800; color:var(--p); margin:10px 0; font-size:1.3rem">0838-2740-8115</p>
+    <div class="social-links">
+        <a href="https://wa.me/6283827408115" style="background:#25d366"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://instagram.com/" style="background:#e1306c"><i class="fab fa-instagram"></i></a>
+        <a href="https://tiktok.com/" style="background:#000"><i class="fab fa-tiktok"></i></a>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const games = {
+    'Mobile Legends': {u:'DM', i:[{q:86, p:19500},{q:172, p:39000},{q:257, p:58000},{q:706, p:155000},{q:1412, p:310000}], 
+        passes: [{n:'Weekly Diamond Pass', p:27500, desc:'Total 210 Diamond + Item'}, {n:'Starlight Pass', p:82000, desc:'Mendapatkan Skin Starlight Bulanan'}]},
+    'Free Fire': {u:'DM', i:[{q:70, p:9000},{q:140, p:18500},{q:355, p:44500},{q:720, p:88000}], 
+        passes: [{n:'FF Weekly Membership', p:28000, desc:'450 Diamond Total'}, {n:'FF Monthly Membership', p:82000, desc:'2600 Diamond Total'}]},
+    'Genshin Impact': {u:'Genesis', i:[{q:60, p:14000},{q:300, p:68000},{q:980, p:215000}], 
+        passes: [{n:'Blessing Welkin Moon', p:75000, desc:'3000 Primogems Total'}]},
+    'PUBG Mobile': {u:'UC', i:[{q:60, p:13000},{q:325, p:64000},{q:660, p:125000}], 
+        passes: [{n:'Royale Pass Upgrade', p:145000, desc:'Buka Hadiah Eksklusif Season'}]}
+};
+
+function init() {
+    const glist = document.getElementById('glist');
+    const plist = document.getElementById('passList');
+    
+    Object.keys(games).forEach(g => {
+        // Render Game Grid
+        glist.innerHTML += `<div class="g-card" onclick="openModal('${g}')"><h3>${g}</h3><p style="font-size:0.6rem; color:var(--a); font-weight:800">PROSES 1 DETIK</p></div>`;
+        
+        // Render Pass Slider
+        games[g].passes.forEach(p => {
+            plist.innerHTML += `
+                <div class="pass-card" onclick="openPassModal('${g}', '${p.n}', ${p.p})">
+                    <span class="pass-tag">DISKON 15%</span>
+                    <h4>${p.n}</h4>
+                    <p>${p.desc}</p>
+                    <div class="pass-price">Rp ${p.p.toLocaleString()}</div>
+                    <small style="opacity:0.5; font-size:0.6rem">Game: ${g}</small>
+                </div>
+            `;
+        });
+    });
+}
+
+let curG="", baseP=0, curI="", pay="", isPassMode=false;
+
+function openModal(g) {
+    curG = g;
+    isPassMode = false;
+    document.getElementById('mTitle').innerText = g;
+    document.getElementById('sid').style.display = (g === 'Mobile Legends') ? 'block' : 'none';
+    document.getElementById('uid').style.gridColumn = (g === 'Mobile Legends') ? 'span 1' : 'span 2';
+    
+    let ig = document.getElementById('itemGrid'); ig.innerHTML = "";
+    games[g].i.forEach(it => {
+        let d = document.createElement('div'); d.className='d-item';
+        d.innerHTML = `<b>${it.q} ${games[g].u}</b><span>Rp ${it.p.toLocaleString()}</span>`;
+        d.onclick = () => { 
+            document.querySelectorAll('.d-item').forEach(x=>x.classList.remove('active')); 
+            d.classList.add('active'); baseP=it.p; curI=it.q+' '+games[g].u; updatePrice();
+        };
+        ig.appendChild(d);
+    });
+    document.getElementById('modal').style.display='flex';
+}
+
+function openPassModal(g, pName, price) {
+    curG = g;
+    isPassMode = true;
+    baseP = price;
+    curI = pName;
+    document.getElementById('mTitle').innerText = pName;
+    document.getElementById('sid').style.display = (g === 'Mobile Legends') ? 'block' : 'none';
+    document.getElementById('itemGrid').innerHTML = `<div class="d-item active" style="grid-column: span 2"><b>Paket Terpilih:</b> ${pName}</div>`;
+    updatePrice();
+    document.getElementById('modal').style.display='flex';
+}
+
+function updatePrice() { document.getElementById('cTotal').innerText = "Rp " + baseP.toLocaleString(); }
+function closeM() { document.getElementById('modal').style.display='none'; }
+function setPay(el, m) { document.querySelectorAll('.pay-item').forEach(x=>x.classList.remove('active')); el.classList.add('active'); pay=m; }
+
+function search() {
+    let v = document.getElementById('find').value.toLowerCase();
+    document.querySelectorAll('.g-card').forEach(c => c.style.display = c.innerText.toLowerCase().includes(v) ? 'block' : 'none');
+}
+
+function order() {
+    const uid = document.getElementById('uid').value;
+    const sid = document.getElementById('sid').value;
+    if(!uid || !pay || baseP === 0) return alert("Mohon lengkapi data!");
+    if(curG === 'Mobile Legends' && !sid) return alert("Server ID harus diisi untuk Mobile Legends!");
+
+    document.getElementById('modal').style.display='none';
+    document.getElementById('success-overlay').style.display='flex';
+    document.getElementById('res').innerHTML = `
+        <b>Game:</b> ${curG}<br>
+        <b>Produk:</b> ${curI}<br>
+        <b>ID Akun:</b> ${uid} ${sid ? '('+sid+')' : ''}<br>
+        <b>Metode:</b> ${pay}<br>
+        <b>Total:</b> Rp ${baseP.toLocaleString()}
+    `;
+    
+    // Animasi Confetti Sederhana
+    for(let i=0; i<30; i++) {
+        let c = document.createElement('div');
+        c.style.position='fixed'; c.style.width='10px'; c.style.height='10px';
+        c.style.background=['#6366f1','#10b981','#ef4444'][Math.floor(Math.random()*3)];
+        c.style.left=Math.random()*100+'vw'; c.style.top='-10px';
+        c.style.zIndex='1001';
+        document.body.appendChild(c);
+        let anim = c.animate([{top:'-10px'}, {top:'100vh', transform:'rotate(360deg)'}], {duration: 2000 + Math.random()*2000});
+        anim.onfinish = () => c.remove();
+    }
+}
+
+document.getElementById('darkBtn').onclick = () => {
+    document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+};
+
+init();
+</script>
+</body>
+</html>
